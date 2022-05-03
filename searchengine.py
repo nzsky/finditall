@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import pyshorteners
 
 
-
 def Jobat_Seek():
     Page = 1
     while True:
@@ -33,5 +32,50 @@ def Jobat_Seek():
 
         Page = Page + 1
 
+
+
+
+def Jobat_Spark():
+
+
+    # combine prefix and keywords to useable url
+    url = "https://careers.sparknz.co.nz/search?search=kw-"+Keywords
+
+    # parse the page from url
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # filter parse result using class
+    job_elements = soup.find_all("div", class_="col-xs-12 col-sm-11 col-md-11 col-lg-11")
+
+    # find job information
+    for job_details in job_elements:
+        try:
+            job_info = job_details.find("a", class_="clicker-link")
+
+            # find job title
+            job_names = job_info.find("span")
+            job_name = job_names.text
+            print("Title: " + job_name)
+
+            # find job link
+            job_link1 = job_info.get("href")
+            url = "https://careers.sparknz.co.nz" + job_link1
+            type_tiny = pyshorteners.Shortener()
+            job_url = type_tiny.tinyurl.short(url)
+            print("Link:  " + job_url)
+        except:
+            break
+
+# user input
 Keywords = input("Please input keywords to search: ")
-Jobat_Seek()
+
+website = input("Please input which website you want to search: Spark, Seek or just press enter for all: ")
+
+if website in ['Spark', 'spark']:
+    Jobat_Spark()
+elif website in ['Seek', 'seek']:
+    Jobat_Seek()
+else:
+    Jobat_Spark()
+    Jobat_Seek()
